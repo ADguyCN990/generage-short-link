@@ -25,6 +25,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: 'shortlink-frontend' # 【请替换】您在Cloudflare上创建的Pages项目名称
+          projectName: 'generage-short-link' # 【请替换】您在Cloudflare上创建的Pages项目名称
           directory: 'frontend' # 要部署的目录
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
