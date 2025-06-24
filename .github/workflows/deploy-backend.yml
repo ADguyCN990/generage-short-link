@@ -1,17 +1,21 @@
-# .github/workflows/deploy-backend.yml
 name: Deploy Backend Worker
 
 on:
+  # 允许手动触发
+  workflow_dispatch: {}
+
+  # 当 backend/ 目录下的文件被推送到 main 分支时自动触发
   push:
     branches:
-      - main  # 只在推送到main分支时触发
+      - main
     paths:
-      - 'backend/**' # 只在backend目录下的文件有改动时触发
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml' # 当工作流文件本身改变时也触发
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: Deploy
+    name: Deploy Backend
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,16 +23,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # 使用一个较新的Node.js版本
+          node-version: '20'
 
       - name: Install Wrangler
         run: npm install -g wrangler
 
       - name: Deploy Worker
-        # 在backend目录下执行部署命令
         working-directory: ./backend 
         run: wrangler deploy
         env:
-          # 将GitHub Secrets注入到环境变量中，Wrangler会自动使用
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

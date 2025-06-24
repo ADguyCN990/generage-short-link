@@ -1,17 +1,21 @@
-# .github/workflows/deploy-frontend.yml
 name: Deploy Frontend Pages
 
 on:
+  # 允许手动触发
+  workflow_dispatch: {}
+
+  # 当 frontend/ 目录下的文件被推送到 main 分支时自动触发
   push:
     branches:
-      - main # 只在推送到main分支时触发
+      - main
     paths:
-      - 'frontend/**' # 只在frontend目录下的文件有改动时触发
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: Deploy
+    name: Deploy Frontend
     steps:
       - name: Checkout
         uses: actions/checkout@v4
