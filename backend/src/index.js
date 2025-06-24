@@ -72,7 +72,7 @@ const shortCodeGenerator = {
       // 存入KV存储
       await env.LINKS_KV.put(shortCode, longUrl);
   
-      const shortlinkDomain = new URL(request.url).origin;
+      const shortlinkDomain = 'https://api.sl.jhclip.top';
       const shortUrl = `${shortlinkDomain}/${shortCode}`;
   
       return createJsonResponse({ success: true, short_url: shortUrl }, 201);
