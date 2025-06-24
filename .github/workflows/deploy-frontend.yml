@@ -1,0 +1,26 @@
+# .github/workflows/deploy-frontend.yml
+name: Deploy Frontend Pages
+
+on:
+  push:
+    branches:
+      - main # 只在推送到main分支时触发
+    paths:
+      - 'frontend/**' # 只在frontend目录下的文件有改动时触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: 'shortlink-frontend' # 【请替换】您在Cloudflare上创建的Pages项目名称
+          directory: 'frontend' # 要部署的目录
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
