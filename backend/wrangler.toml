@@ -1,0 +1,11 @@
+# wrangler.toml (简化版)
+
+name = "my-shortener-backend"
+main = "src/index.js"
+compatibility_date = "2025-06-24"
+
+# 关键改动：将D1绑定换回KV绑定
+[[kv_namespaces]]
+binding = "LINKS_KV" # 代码中通过 env.LINKS_KV 访问
+id = "85537d151a5d41c4be97f2717074ed2e" # 【请替换】您在Cloudflare上创建的KV的ID
+preview_id = "85537d151a5d41c4be97f2717074ed2e" # 【请替换】预览ID，用于本地调试

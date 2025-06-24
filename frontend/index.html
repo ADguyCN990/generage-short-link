@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>短链接生成器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .container { max-width: 600px; }
+        .result-container { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-5">
+                <h1 class="card-title text-center mb-4">短链接生成器</h1>
+                <div class="mb-3">
+                    <input type="url" class="form-control form-control-lg" id="longUrlInput" placeholder="请输入或粘贴您的长链接...">
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-primary btn-lg" id="generateBtn" onclick="createShortlink()">生成短链接</button>
+                </div>
+                
+                <div class="mt-4 result-container" id="resultContainer">
+                    <div class="alert alert-success">
+                        <strong>成功!</strong> 您的短链接是: <a href="#" id="shortUrlLink" target="_blank" class="alert-link"></a>
+                    </div>
+                    <div class="d-grid">
+                        <button class="btn btn-secondary" id="copyBtn">复制短链接</button>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger mt-4 d-none" id="errorBox"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 【请务必修改】您的后端Worker API的创建链接地址
+        const backendApiUrl = 'http://localhost:8787/api/create/shortlink';
+
+        const longUrlInput = document.getElementById('longUrlInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const shortUrlLink = document.getElementById('shortUrlLink');
+        const errorBox = document.getElementById('errorBox');
+        const copyBtn = document.getElementById('copyBtn');
+
+        async function createShortlink() {
+            const longUrl = longUrlInput.value.trim();
+            if (!longUrl) {
+                showError('请输入一个有效的链接。');
+                return;
+            }
+
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 正在生成...';
+            hideMessages();
+
+            try {
+                const response = await fetch(backendApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: longUrl }),
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) throw new Error(result.error || '未知错误');
+                
+                showSuccess(result.short_url);
+
+            } catch (error) {
+                showError('请求失败: ' + error.message);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '生成短链接';
+            }
+        }
+        
+        function showSuccess(url) {
+            shortUrlLink.href = url;
+            shortUrlLink.textContent = url;
+            resultContainer.style.display = 'block';
+            
+            copyBtn.onclick = function() {
+                navigator.clipboard.writeText(url).then(() => {
+                    copyBtn.textContent = '已复制!';
+                    setTimeout(() => { copyBtn.textContent = '复制短链接'; }, 2000);
+                }).catch(err => {
+                    alert('复制失败: ' + err);
+                });
+            };
+        }
+
+        function showError(message) {
+            errorBox.textContent = message;
+            errorBox.classList.remove('d-none');
+        }
+
+        function hideMessages() {
+            resultContainer.style.display = 'none';
+            errorBox.classList.add('d-none');
+        }
+    </script>
+</body>
+</html>
